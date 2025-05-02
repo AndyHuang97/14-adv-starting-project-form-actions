@@ -1,6 +1,20 @@
 {
   "opinions": [
     {
+      "id": 1746216608331,
+      "votes": 0,
+      "userName": "Max",
+      "title": "Third Test",
+      "body": "This is the third test"
+    },
+    {
+      "id": 1746216163064,
+      "votes": 0,
+      "userName": "Andy",
+      "title": "Second Test",
+      "body": "This is the second test"
+    },
+    {
       "id": 1746216084440,
       "votes": 0,
       "userName": "Andy",

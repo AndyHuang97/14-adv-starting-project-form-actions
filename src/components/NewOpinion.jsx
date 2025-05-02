@@ -1,6 +1,7 @@
 import { useActionState, useContext } from "react";
 
 import { OpinionsContext } from "../store/opinions-context.jsx";
+import Submit from "./Submit.jsx";
 
 export function NewOpinion() {
   const { addOpinion } = useContext(OpinionsContext);
@@ -42,6 +43,7 @@ export function NewOpinion() {
     return { errors: null };
   }
 
+  // could use pending to disable submit button
   const [formState, formAction, pending] = useActionState(submitOpinionAction, {
     errors: null,
   });
@@ -88,9 +90,7 @@ export function NewOpinion() {
             ))}
           </ul>
         )}
-        <p className='actions'>
-          <button type='submit'>Submit</button>
-        </p>
+        <Submit />
       </form>
     </div>
   );
