@@ -1,7 +1,11 @@
-import { useActionState } from "react";
+import { useActionState, useContext } from "react";
+
+import { OpinionsContext } from "../store/opinions-context.jsx";
 
 export function NewOpinion() {
-  function submitOpinionAction(prevFormState, formData) {
+  const { addOpinion } = useContext(OpinionsContext);
+
+  async function submitOpinionAction(prevFormState, formData) {
     const data = Object.fromEntries(formData.entries());
     console.log(data);
 
@@ -29,6 +33,11 @@ export function NewOpinion() {
     }
 
     // submit the data to backend
+    await addOpinion({
+      userName: data.userName,
+      title: data.title,
+      body: data.body,
+    });
 
     return { errors: null };
   }
@@ -73,7 +82,7 @@ export function NewOpinion() {
         </p>
 
         {formState.errors && (
-          <ul className="errors">
+          <ul className='errors'>
             {formState.errors.map((error) => (
               <li key={error}>{error}</li>
             ))}
