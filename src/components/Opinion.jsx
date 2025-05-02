@@ -1,21 +1,37 @@
-import { useContext, useActionState } from "react";
+import { useContext, useActionState, useOptimistic } from "react";
 
 import { OpinionsContext } from "../store/opinions-context.jsx";
-
 
 export function Opinion({ opinion: { id, title, body, userName, votes } }) {
   const { upvoteOpinion, downvoteOpinion } = useContext(OpinionsContext);
 
+  // Optimistic UI update, similar to useState, but for async actions on forms
+  // updates the UI while waiting for the server response
+  // the returned function should be called in form actions
+  // shows a temporary (optimistic) state until the server response is received
+  // if the server response fails, the optimistic state is reverted
+  const [optimisticVotes, setVotesOptimistically] = useOptimistic(
+    votes,
+    // the first param is always passed by react, the next params must be passed
+    // to the returned function
+    (prevVotes, mode) => (mode === "up" ? prevVotes + 1 : prevVotes - 1)
+  );
   async function upvoteAction() {
+    setVotesOptimistically("up");
     await upvoteOpinion(id);
   }
 
   async function downvoteAction() {
+    setVotesOptimistically("down");
     await downvoteOpinion(id);
   }
 
-  const [upvoteFormState, upvoteFormAction, upvotePending] = useActionState(upvoteAction, null);
-  const [downvoteFormState, downvoteFormAction, downvotePending] = useActionState(downvoteAction, null);
+  const [upvoteFormState, upvoteFormAction, upvotePending] = useActionState(
+    upvoteAction,
+    null
+  );
+  const [downvoteFormState, downvoteFormAction, downvotePending] =
+    useActionState(downvoteAction, null);
 
   return (
     <article>
@@ -25,7 +41,10 @@ export function Opinion({ opinion: { id, title, body, userName, votes } }) {
       </header>
       <p>{body}</p>
       <form className='votes'>
-        <button formAction={upvoteFormAction} disabled={upvotePending || downvotePending}>
+        <button
+          formAction={upvoteFormAction}
+          disabled={upvotePending || downvotePending}
+        >
           <svg
             xmlns='http://www.w3.org/2000/svg'
             width='24'
@@ -43,9 +62,12 @@ export function Opinion({ opinion: { id, title, body, userName, votes } }) {
           </svg>
         </button>
 
-        <span>{votes}</span>
+        <span>{optimisticVotes}</span>
 
-        <button formAction={downvoteFormAction} disabled={upvotePending || downvotePending}>
+        <button
+          formAction={downvoteFormAction}
+          disabled={upvotePending || downvotePending}
+        >
           <svg
             xmlns='http://www.w3.org/2000/svg'
             width='24'
